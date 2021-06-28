@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-4 mx-auto mt-5">
+                <div>
+                    <h3 class="h3 text-center mb-3">Sign Up</h3>
+                    <div class="mb-3">
+                        <label for="name">Name: </label>
+                        <input class="form-control" required id="name" type="text" name="name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email">Email: </label>
+                        <input class="form-control" required id="email" type="email" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password">Password: </label>
+                        <input class="form-control" required type="password" id="password" name="password">
+                    </div>
+                    <div class="text-center">
+                        <button onclick="signUp()" type="button" class="btn btn-success text-center">Sign up</button>
+                    </div>
+                </div>
+                <p id="error-text" class="text-danger small mt-2 mb-0 text-center"></p>
+                <div class="text-center">
+                    <a href="/sign-in" class="mx-auto">Sign in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <script>
+        function signUp() {
+            fetch('http://localhost:3000/sign-up', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: document.querySelector('#name').value,
+                    email: document.querySelector('#email').value,
+                    password: document.querySelector('#password').value
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        localStorage.setItem('token', data.token);
+                        window.location.pathname = '/cars';
+                        localStorage.setItem('profile',JSON.stringify(data.data));
+                    } else {
+                        document.getElementById('error-text').innerText = data.message;
+                    }
+                })
+                .catch(err => console.error("ERROR: ", err))
+        }
+    </script>
+</body>
+
+</html>

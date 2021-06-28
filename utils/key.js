@@ -1,0 +1,1 @@
+module.exports = 'maxfiy_@kalt';
