@@ -9,7 +9,9 @@ const carSchema = new mongoose.Schema({
     price: Number,
     country: String,
     description: String,
-    id: Number
+    id: Number,
+    img: String,
+    imgFileName: String
 });
 
 const Cars = mongoose.model('Cars',carSchema);

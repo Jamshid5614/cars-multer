@@ -1,29 +1,22 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const {
-    createCar,
-    getCar,
-    deleteCar,
-    updateCar,
-    renderEjs,
-    getCarForView,
+  createCar,
+  getCar,
+  deleteCar,
+  updateCar,
+  getCarForView,
+  getAllCars,
+} = require("../controllers/cars");
+const auth = require("../middleware/auth");
+const upload = require("../utils/multer");
 
-} = require('../controllers/cars');
-const auth = require('../middleware/auth');
-
-
-router.get('/new', renderEjs);
-router.get('/:id', getCar);
-router.patch('/:id',auth, updateCar);
-router.delete('/:id',auth, deleteCar);
-router.post('/new', createCar);
-router.get('cars/view/:id',getCarForView);
-
-
+router.get("/", getAllCars);
+router.get("/:id", getCar);
+router.patch("/:id", upload.single("image"), updateCar);
+router.delete("/:id", deleteCar);
+router.post("/new", upload.single("image"), createCar);
+router.get("cars/view/:id", getCarForView);
 
 module.exports = router;
-
-
-
-
 

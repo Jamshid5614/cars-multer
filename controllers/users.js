@@ -1,13 +1,12 @@
 const UsersModel = require('../models/users');
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
-const key = require('../utils/key');
 const config = require('config');
-
-
+const key = process.env.JWTPRIVATEKEY;
+const port = require('../utils/port');
 
 exports.signIn = async (req, res) => {
-
+    
     const schema = Joi.object({
         email: Joi.string().required(),
         password: Joi.string().required()
@@ -19,20 +18,14 @@ exports.signIn = async (req, res) => {
 
     if (!error) {
         const { email, password } = req.body;
-        const findedUser = await UsersModel.find({ email: email, password: password });
-        if (!findedUser || findedUser.length == 0) {
+        const findedUser = await UsersModel.findOne({ email: email, password: password });
+        if (!findedUser) {
             res.send({
                 success: false,
                 message: 'Email or password is wrong'
             });
         } else {
-            // console.log(findedUser[0]);
-            const token = jwt.sign({_id: findedUser[0]._id}, key);
-            // res.header('x-auth-token', token).send({
-            //     token,
-            //     success: true,
-            //     data: findedUser
-            // });
+            const token = jwt.sign({_id: findedUser._id}, key);
             res.send({
                 token,
                 success: true,
@@ -47,10 +40,6 @@ exports.signIn = async (req, res) => {
     }
 
 };
-exports.renderSignInEjs = (req, res) => {
-    res.render('auth/sign-in', { isMustSignUp: false });
-};
-
 
 exports.signUp = async (req, res) => {
 
@@ -66,17 +55,12 @@ exports.signUp = async (req, res) => {
     const { error } = validateResult;
 
     if (!error) {
-        const inspection = await UsersModel.find({ email: req.body.email, password: req.body.password });
-        // console.log(inspection);
+        const inspection = await UsersModel.find({ email: req.body.email });
         if (!inspection || inspection.length == 0) {
             const user = new UsersModel(req.body);
             const savedUser = await user.save();
             const token = jwt.sign({_id: savedUser._id}, key);
-            // res.header('x-auth-token',token).send({
-            //     token,
-            //     success: true,
-            //     data: savedUser
-            // });
+            
             res.send({
                 token,
                 success: true,
@@ -86,7 +70,7 @@ exports.signUp = async (req, res) => {
         } else {
             res.send({
                 success: false,
-                message: 'Email and Password already taken'
+                message: 'Email already taken, please enter enother Email'
             });
         }
     } else {
@@ -97,22 +81,31 @@ exports.signUp = async (req, res) => {
     }
 
 };
-exports.renderSigupnEjs = (req, res) => {
-    res.render('auth/sign-up');
-};
-
 
 exports.updateProfile = async (req, res) => {
-    const result = await UsersModel.updateOne({ _id: req.params.id }, req.body);
-    res.send({
-        success: true,
-        data: result
-    });
+    console.log(req.file)
+    console.log(req.body)
+    if(req.file) {
+        const updatedUser = await UsersModel.updateOne({_id: req.params.id},{ ...req.body,img: `http://localhost:${port}/${req.file.path.slice(6,req.file.path.length)}` });
+        if(updatedUser){
+            const result = await UsersModel.findOne({_id: req.params.id});
+            console.log(result)
+            res.send(result);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } else {
+        const updatedUser = await UsersModel.updateOne({_id: req.params.id},{ ...req.body});
+        if(updatedUser){
+            const result = await UsersModel.findOne({_id: req.params.id});
+            console.log(result)
+            res.send(result);
+        } else {
+            res.status(404).send('User not found');
+        }
+    }
 };
 
-exports.renderProfileEjs = (req,res) => {
-    res.render('profile');
-};
 exports.getProfile = async (req,res) => {
     const findedUser = await UsersModel.find({_id: req.user._id});
     if(!findedUser || findedUser.length == 0) {

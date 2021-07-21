@@ -1,14 +1,12 @@
 const jwt = require('jsonwebtoken');
 const config = require('config');
-const key = require('../utils/key');
-
-
+const key = process.env.JWTPRIVATEKEY;
 
 
 function auth(req, res, next) {
     const token = req.header('x-auth-token');
     if (!token) {
-        return res.redirect('/sign-in');
+        return res.json({success: false});
     } else {
         try {
             const decoded = jwt.verify(token, key);
@@ -16,7 +14,7 @@ function auth(req, res, next) {
             next();
         }
         catch (err) {
-            return res.status(400).send('Yaroqsiz token');
+            return res.status(400).send('invalid token');
         }
     }
 }
