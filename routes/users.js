@@ -16,7 +16,7 @@ router.post('/sign-in',signIn);
 router.post('/sign-up',signUp);
 router.patch('/profile/:id',upload.single('img'),updateProfile);
 router.post('/profile',auth,getProfile);
-
+router.get('/profile/:id',getProfile)
 
 
 

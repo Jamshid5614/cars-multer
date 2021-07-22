@@ -6,7 +6,6 @@ const port = require("../utils/port");
 const sharp = require("sharp");
 
 exports.createCar = async (req, res) => {
-  console.log(req.file);
   const schema = Joi.object({
     model: Joi.string().required(),
     brand: Joi.string().required(),
@@ -27,18 +26,18 @@ exports.createCar = async (req, res) => {
     });
   } else {
     const filePath = req.file.path;
-    sharp(filePath)
-      .resize(120, 120)
-      .toFile('uploads/','-resized-', req.file.filename, (err, info) => {
-        if (error) {
-          console.log("error: ", err);
-        }
-      })
-        .then(res => {
-            fs.unlink(filePath, (err) => {
-              if (err) throw new Error(err);
-            });
-        })
+    // sharp(filePath)
+    //   .resize(120, 120)
+    //   .toFile('uploads/','-resized-', req.file.filename, (err, info) => {
+    //     if (error) {
+    //       console.log("error: ", err);
+    //     }
+    //   })
+    //     .then(res => {
+    //         fs.unlink(filePath, (err) => {
+    //           if (err) throw new Error(err);
+    //         });
+    //     }) 
     const { model, brand, price, country, description } = req.body;
     const carsLength = await CarsModel.find();
     const car = new CarsModel({
@@ -80,8 +79,7 @@ exports.getCar = async (req, res) => {
 
 exports.deleteCar = async (req, res) => {
   const findedCar = await CarsModel.findOne({ id: req.params.id });
-  console.log(findedCar.imgFileName);
-  fs.unlink(`public/uploads/${findedCar.imgFileName}`, (err) => {
+  fs.unlink(`public/uploads/${findedCar.img.slice(29,findedCar.img.length)}`, (err) => {
     if (err) {
       console.log("Error: ", err);
     }
@@ -111,7 +109,7 @@ exports.updateCar = async (req, res) => {
         brand,
         description,
         price,
-        img: `http://localhost:${port}/${req.file.path}`,
+        img: `http://localhost:${port}/uploads/${req.file.filename}`,
       }
     );
     if (result) {

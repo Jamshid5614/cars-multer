@@ -11,7 +11,8 @@ const carSchema = new mongoose.Schema({
     description: String,
     id: Number,
     img: String,
-    imgFileName: String
+    imgFileName: String,
+    oldImg: String
 });
 
 const Cars = mongoose.model('Cars',carSchema);
