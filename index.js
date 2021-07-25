@@ -2,12 +2,8 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const routesCar = require('./routes/cars');
-const CarsModel = require('./models/cars');
 const userRoutes = require('./routes/users');
-const config = require('config');
-const path = require('path');
 const methodOverride = require('method-override');
-const sharp = require('sharp')
 const cors = require('cors');
 //swagger
 const swaggerUI = require('swagger-ui-express');
@@ -16,10 +12,7 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const port = require('./utils/port');
 
 
-
-////////////////////maxviy_kalit
-// console.log(config.get('jamshidning_jwtPrivateKey'))
-console.log(process.env.JWTPRIVATEKEY)
+console.log(process.env.JWTPRIVATEKEY);
 
 
 app.use(express.json());
